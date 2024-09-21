@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "stdint.h": "c",
+        "stab.h": "c"
+    },
+    "cmake.options.statusBarVisibility": "compact"
+}
