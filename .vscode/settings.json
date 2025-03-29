@@ -1,7 +1,13 @@
 {
     "files.associations": {
+<<<<<<< HEAD
         "stdint.h": "c",
         "stab.h": "c"
     },
     "cmake.options.statusBarVisibility": "compact"
+=======
+        "string": "cpp",
+        "iosfwd": "cpp"
+    }
+>>>>>>> stepik
 }
