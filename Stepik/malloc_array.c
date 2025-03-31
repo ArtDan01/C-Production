@@ -3,63 +3,89 @@
 #include <inttypes.h>
 #include <stdlib.h>
 
-// вы можете реализовать эти функции для более удобного считывания чисел
-int64_t read_int64();
-size_t read_size();
+// Считать int64_t из ввода
+int64_t read_int64() {   
+    int64_t local = 0;
+    if (scanf("%" SCNd64, &local) != 1) {
+        perror("Failed to read int64");
+        exit(EXIT_FAILURE);
+    }
+    return local;
+}
 
-// заполнить уже выделенный массив array размера size числами
-// числа нужно считывать из потока ввода
+// Считать size_t из ввода
+size_t read_size() {
+    size_t local = 0;
+    if (scanf("%zu", &local) != 1) {
+        perror("Failed to read size_t");
+        exit(EXIT_FAILURE);
+    }
+    return local;
+}
+
+// Заполнить массив числами из ввода
 void array_int_fill(int64_t* array, size_t size) {
     for (size_t i = 0; i < size; i++) {
-        if (scanf("%" SCNd64, &array[i]) != EOF) {
-            continue;
-        } else {
-            perror("Failed to read int64");
-            return;
-        }
+        array[i] = read_int64(); // Правильно заполняем массив
     }
 }
 
-int64_t read_int64() {   
-    int64_t local = 0;
-    scanf("%" SCNd64, &local);
-    return local;
-}
-
-size_t read_size() {
-    size_t local = 0;
-    scanf("%zu", &local);
-    return local;
-}
-
-// Считать размер массива в *size, выделить память под массив и заполнить его числами, вызвав array_int_fill
+// Выделить память и считать массив
 int64_t* array_int_read(size_t* size) {
-    int64_t* arr = malloc(sizeof(int64_t) * (*size)); // выделяем память
+    *size = read_size();
+    int64_t* arr = malloc(sizeof(int64_t) * (*size));
     if (arr == NULL) {
         perror("Failed to allocate memory");
         return NULL;
     }
-    array_int_fill(arr, *size); // заполняем массив
-    return arr; // возвращаем указатель на массив
+    array_int_fill(arr, *size);
+    return arr;
+}
+
+int64_t* array_int_min( int64_t* array, size_t size ) 
+{   int64_t* minimum = &array[0];
+    for (size_t i = 0; i < size; i++)
+    {
+        if(&array[i] < minimum) minimum = &array[i];
+    }
+    return minimum;
+}
+   
+
+void intptr_print( int64_t* x ) 
+{
+    if (x == NULL) printf("%s", "None");
+    else
+    {
+        printf("%" PRId64, *x);
+    }
+}
+
+
+void perform() 
+{
+    size_t size = read_size();
+    int64_t* array = array_int_read(&size);
+    int64_t * minimum = array_int_min(array, size);
+    intptr_print(minimum);
+    // освободим память, выделенную для массива
+    free(array);
 }
 
 int main() {
     size_t size = 0;
-    scanf("%zu", &size); // правильно считываем size
-    int64_t* array = array_int_read(&size); // считываем и заполняем массив
+    int64_t* array = array_int_read(&size); // Считываем массив
 
     if (array == NULL) {
-        return 1; // ошибка выделения памяти
+        return 1; // Ошибка выделения памяти
     }
 
-    // Выводим элементы массива для проверки
+    // Выводим массив для проверки
     for (size_t i = 0; i < size; i++) {
         printf("%" PRId64 " ", array[i]);
     }
     printf("\n");
 
-    // Не забудьте освободить память
-    free(array);
-
+    free(array); // Освобождаем память
     return 0;
 }
