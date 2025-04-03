@@ -51,6 +51,52 @@ int64_t* array_int_min( int64_t* array, size_t size )
     return minimum;
 }
    
+int64_t** marray_read( size_t* rows, size_t** sizes ) 
+{
+    *rows = read_size();
+    *sizes = malloc(sizeof(size_t) * (*rows));
+    if (*sizes == NULL) {
+        perror("Failed to allocate memory for sizes");
+        return NULL;
+    }
+    int64_t** marray = malloc(sizeof(int64_t*) * (*rows));
+    if (marray == NULL) {
+        perror("Failed to allocate memory for marray");
+        free(*sizes);
+        return NULL;
+    }
+    for (size_t i = 0; i < *rows; i++) {
+        (*sizes)[i] = read_size();
+        marray[i] = malloc(sizeof(int64_t) * (*sizes)[i]);
+        if (marray[i] == NULL) {
+            perror("Failed to allocate memory for marray row");
+            for (size_t j = 0; j < i; j++) {
+                free(marray[j]);
+            }
+            free(marray);
+            free(*sizes);
+            return NULL;
+        }
+        array_int_fill(marray[i], (*sizes)[i]);
+    }
+    return marray;
+
+}
+
+void marray_free( int64_t** marray, size_t rows ) {
+    for(size_t i = 0; i < rows; i++)
+    {
+        free(marray[i]);
+    }
+    free(marray);
+   }
+
+void marray_print(int64_t** marray, size_t* sizes, size_t rows) {
+    for( size_t i = 0; i < rows; i = i + 1 ) {
+        array_int_print( marray[i], sizes[i] );
+        print_newline();
+    }
+}
 
 void intptr_print( int64_t* x ) 
 {
@@ -62,15 +108,59 @@ void intptr_print( int64_t* x )
 }
 
 
-void perform() 
-{
-    size_t size = read_size();
-    int64_t* array = array_int_read(&size);
-    int64_t * minimum = array_int_min(array, size);
-    intptr_print(minimum);
-    // освободим память, выделенную для массива
-    free(array);
+// void performing() 
+// {
+//     size_t size = read_size();
+//     int64_t* array = array_int_read(&size);
+//     int64_t * minimum = array_int_min(array, size);
+//     intptr_print(minimum);
+//     // освободим память, выделенную для массива
+//     free(array);
+// }
+
+
+int64_t* int64_ptr_min(int64_t* x, int64_t* y) {
+    if (x == NULL) return y;  // Если x == NULL, вернуть y (может быть NULL)
+    if (y == NULL) return x;  // Если y == NULL, вернуть x (уже знаем, что x != NULL)
+    return (*x < *y) ? x : y; // Если оба не NULL, вернуть указатель на минимум
 }
+
+// Вернуть адрес минимального элемента массива массивов
+int64_t* marray_int_min( int64_t** marray, size_t* sizes, size_t rows ) {
+    int64_t* minimum = *marray;
+    for(size_t i = 0; i < rows - 1; i ++){
+        for(size_t j = 0; j < *sizes; j++){
+            if(marray[i][j] < marray[i+1][j]) *minimum = marray[i+1][j];
+        }
+    }
+
+    return minimum;
+}
+
+// Вычесть m изо всех элементов массива
+void marray_normalize( int64_t** marray, size_t sizes[], size_t rows, int64_t m ) {
+    for(size_t i = 0; i < rows - 1; i++){
+        for(size_t j = 0; j < *sizes; j++){
+            marray[i][j] -=m;
+        }
+    }
+}
+
+// Прочитать, найти минимум и нормализовать массив, вывести результат
+void perform() {
+    size_t rows = read_size();
+    int64_t* marray = marray_read(&rows);
+    
+    int64_t* minimum = marray_int_min(array, size);
+    intptr_print(minimum);
+  
+    marray_normalize(array, size);
+  
+    marray_print(marray, )
+  
+    // Освобождение памяти
+    marray_free(marray, )
+  }
 
 int main() {
     size_t size = 0;
