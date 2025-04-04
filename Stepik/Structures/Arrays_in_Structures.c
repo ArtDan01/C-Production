@@ -40,14 +40,15 @@
   
   // возвращает ошибку если индекс за пределами массива
   struct maybe_int64 array_int_get( struct array_int a, size_t i ) {
-    if(i > a.size || i < 0) return (struct array_int_get){0};
-    else return (struct array_int_get){a.data[i], i};
+    if( i > a.size || i < 0 ) return (struct maybe_int64){0};
+    else return (struct maybe_int64){a.data[i], a.size = i};
   }
   
   // возвращает false если индекс за пределами массива
   bool array_int_set( struct array_int a, size_t i, int64_t value ) {
     if(i > a.size) return false;
-    else return true;
+    a.data[i] = value;
+    return true;
   }
   
   void array_int_print( struct array_int array ) {
@@ -57,8 +58,14 @@
   }
   
   struct maybe_int64 array_int_min( struct array_int array ) {
-    ???
+    if(array.size == 0 && !array_int_set) return (struct maybe_int64){0};
+    int64_t min = array.data;
+    for(size_t* cur = array.data + 1; cur < array.size; cur++){
+      if(*cur < min) min = cur;
+    }
+    return(struct maybe_int64){min, array.size};
   }
+
   
   void array_int_free( struct array_int a ) { 
       if ( a.size > 0 ) {
