@@ -1,7 +1,17 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <inttypes.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
+int64_t read_int64() {   
+  int64_t local = 0;
+  if (scanf("%" SCNd64, &local) != 1) {
+      perror("Failed to read int64");
+      exit(EXIT_FAILURE);
+  }
+  return local;
+}
 
  struct maybe_int64 {
     int64_t value;
@@ -40,8 +50,8 @@
   
   // возвращает ошибку если индекс за пределами массива
   struct maybe_int64 array_int_get( struct array_int a, size_t i ) {
-    if( i > a.size || i < 0 ) return (struct maybe_int64){0};
-    else return (struct maybe_int64){a.data[i], a.size = i};
+    if( i > a.size) return (struct maybe_int64){0};
+    return (struct maybe_int64){a.data[i], true};
   }
   
   // возвращает false если индекс за пределами массива
@@ -58,12 +68,12 @@
   }
   
   struct maybe_int64 array_int_min( struct array_int array ) {
-    if(array.size == 0 && !array_int_set) return (struct maybe_int64){0};
-    int64_t min = array.data;
-    for(size_t* cur = array.data + 1; cur < array.size; cur++){
-      if(*cur < min) min = cur;
+    if(array.size == 0) return (struct maybe_int64){0};
+    int64_t min = *(array.data);
+    for(int64_t* cur = array.data + 1; *cur < array.size; cur++){
+      if(*cur < min) min = *cur;
     }
-    return(struct maybe_int64){min, array.size};
+    return(struct maybe_int64){min, true};
   }
 
   
