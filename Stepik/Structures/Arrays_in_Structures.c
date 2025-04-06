@@ -84,7 +84,46 @@ int64_t read_int64() {
       } 
   }
 
-int main(){
+  int main() {
+    printf("Введите размер массива и элементы:\n");
+
+    struct array_int arr = array_int_read();
+
+    printf("Массив: ");
+    array_int_print(arr);
+    printf("\n");
+
+    // Попробуем получить элемент
+    size_t index = 1;
+    struct maybe_int64 val = array_int_get(arr, index);
+    if (val.valid) {
+        printf("Элемент на позиции %zu: %" PRId64 "\n", index, val.value);
+    } else {
+        printf("Ошибка: индекс %zu вне диапазона\n", index);
+    }
+
+    // Попробуем установить значение
+    int64_t new_value = 123;
+    if (array_int_set(arr, index, new_value)) {
+        printf("Установлено значение %" PRId64 " на позицию %zu\n", new_value, index);
+    } else {
+        printf("Ошибка установки значения по индексу %zu\n", index);
+    }
+
+    printf("Массив после установки: ");
+    array_int_print(arr);
+    printf("\n");
+
+    // Найдём минимум
+    struct maybe_int64 min_val = array_int_min(arr);
+    if (min_val.valid) {
+        printf("Минимум в массиве: %" PRId64 "\n", min_val.value);
+    } else {
+        printf("Массив пустой, минимум не найден\n");
+    }
+
+    // Освободим память
+    array_int_free(arr);
 
     return 0;
 }
