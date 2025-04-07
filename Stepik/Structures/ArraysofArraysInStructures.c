@@ -15,7 +15,7 @@ struct maybe_int64 {
 struct array_int {
     int64_t* data;
     size_t size;
-  };
+};
 
 /* Считывание размера массива со стандартного ввода */
 size_t read_size() {
@@ -44,7 +44,7 @@ void array_int_fill( int64_t* array, size_t sz ) {
     }
 }
 
-/* Функция, возвращающая структуру, занимается чтением данных в массиве по индексу */
+/* Функция, возвращающая структуру, занимается чтением данных и заполнением массива */
 struct array_int array_int_read() {
     const size_t size = read_size();
     if (size > 0) {
@@ -138,30 +138,83 @@ bool array_array_int_set_row( struct array_array_int a, size_t i, struct array_i
 /*  --- get/set ---  */
 
 struct maybe_int64 array_array_int_get( struct array_array_int a, size_t i, size_t j ) {
-    if((i >=0 && i < a.size) && (j <))
+    if((i >=0 && i < a.size) && (j>= 0 && j <a.data[i].size)) return(struct maybe_int64){ a.data[i].data[j], true};
+    else return (struct maybe_int64){0};
 }
 
 bool array_array_int_set( struct array_array_int a, size_t i, size_t j, int64_t value ) {
-  ???
+    if (i >= a.size || j >= a.data[i].size) return false;
+    a.data[i].data[j] = value;
+    return true;
 }
 
 /*  --- read/print ---  */
 
 struct array_array_int array_array_int_read() {
- ???
+    struct array_array_int a;
+    a.size = read_size();  // читаем количество строк
+
+    if (a.size <= 0) return (struct array_array_int){NULL, 0};
+
+    a.data = malloc(sizeof(struct array_int) * a.size);
+    if (!a.data) {
+        perror("malloc failed for a.data");
+        return (struct array_array_int){NULL, 0};
+    }
+
+    for (size_t i = 0; i < a.size; i++) {
+        a.data[i].size = read_size();
+        if (a.data[i].size <= 0) {
+            // Освобождаем уже выделенную память
+            for (size_t j = 0; j < i; j++) {
+                free(a.data[j].data);
+            }
+            free(a.data);
+            return (struct array_array_int){NULL, 0};
+        }
+
+        a.data[i].data = malloc(sizeof(int64_t) * a.data[i].size);
+        if (!a.data[i].data) {
+            perror("malloc failed for a.data[i].data");
+            // Освобождаем уже выделенную память
+            for (size_t j = 0; j < i; j++) {
+                free(a.data[j].data);
+            }
+            free(a.data);
+            return (struct array_array_int){NULL, 0};
+        }
+
+        array_int_fill(a.data[i].data, a.data[i].size);
+    }
+
+    return a;
 }
 
 
 void array_array_int_print( struct array_array_int array) {
-  ???
+    if(array.size==0)    printf("\n");
+    for(size_t i = 0; i < array.size; i++){
+        array_int_print(array.data[i]);  // Печатаем всю строку
+        printf("\n");
+}
 }
 
 
 /*  --- min/normalize ---  */
 
 /* Найти минимальный элемент в массиве массивов */
-struct maybe_int64 array_array_int_min( struct array_array_int array ) {
- ???
+struct maybe_int64 array_array_int_min(struct array_array_int array) {
+    struct maybe_int64 result = {0, false};  // изначально ничего не найдено
+
+    for (size_t i = 0; i < array.size; i++) {
+        struct maybe_int64 local_min = array_int_min(array.data[i]);
+        if (local_min.valid) {
+            if (!result.valid || local_min.value < result.value) {
+                result = local_min;
+            }
+        }
+    }
+    return result;
 }
 
 /* Вычесть из всех элементов массива массивов число m */
@@ -175,7 +228,11 @@ void array_array_int_normalize( struct array_array_int array, int64_t m) {
 }
 
 void array_array_int_free( struct array_array_int array ) {
-  ???
+    for(size_t i = 0; i < array.size; i++)
+    {
+        free(array.data[i].data);
+    }
+    free(array.data);
 }
 
 /* Функция проверки правильности работы всего написанного */
