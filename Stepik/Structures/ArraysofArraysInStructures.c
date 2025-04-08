@@ -17,23 +17,25 @@ struct array_int {
     size_t size;
 };
 
-/* Считывание размера массива со стандартного ввода */
 size_t read_size() {
     size_t local = 0;
+    printf("[read_size] Ожидается ввод size_t: ");
     if (scanf("%zu", &local) != 1) {
-        perror("Failed to read size_t");
+        perror("[read_size] Ошибка чтения size_t");
         exit(EXIT_FAILURE);
     }
+    printf("[read_size] Прочитано: %zu\n", local);
     return local;
 }
 
-/* Считывание числа в массив со ввода */
 int64_t read_int64() {   
     int64_t local = 0;
+    printf("[read_int64] Ожидается ввод int64: ");
     if (scanf("%" SCNd64, &local) != 1) {
-        perror("Failed to read int64");
+        perror("[read_int64] Ошибка чтения int64");
         exit(EXIT_FAILURE);
     }
+    printf("[read_int64] Прочитано: %" PRId64 "\n", local);
     return local;
 }
 
@@ -139,13 +141,15 @@ bool array_array_int_set_row( struct array_array_int a, size_t i, struct array_i
 
 struct maybe_int64 array_array_int_get( struct array_array_int a, size_t i, size_t j ) {
     if((i >=0 && i < a.size) && (j>= 0 && j <a.data[i].size)) return(struct maybe_int64){ a.data[i].data[j], true};
-    else return (struct maybe_int64){0};
+    else return (struct maybe_int64){ .value = 0, .valid = false };
 }
 
 bool array_array_int_set( struct array_array_int a, size_t i, size_t j, int64_t value ) {
-    if (i >= a.size || j >= a.data[i].size) return false;
-    a.data[i].data[j] = value;
-    return true;
+    if (i < a.size && j < a.data[i].size) {
+        a.data[i].data[j] = value;
+        return true;
+    }
+    return false;
 }
 
 /*  --- read/print ---  */
@@ -203,18 +207,34 @@ void array_array_int_print( struct array_array_int array) {
 /*  --- min/normalize ---  */
 
 /* Найти минимальный элемент в массиве массивов */
-struct maybe_int64 array_array_int_min(struct array_array_int array) {
-    struct maybe_int64 result = {0, false};  // изначально ничего не найдено
-
-    for (size_t i = 0; i < array.size; i++) {
-        struct maybe_int64 local_min = array_int_min(array.data[i]);
-        if (local_min.valid) {
-            if (!result.valid || local_min.value < result.value) {
-                result = local_min;
+struct maybe_int64 array_array_int_min(struct array_array_int a) {
+    struct maybe_int64 min = { .valid = false };
+    printf("[debug] array_array_int_min called\n");
+    // Первый проход — найти минимум
+    for (size_t i = 0; i < a.size; ++i) {
+        struct array_int arr = a.data[i];
+        for (size_t j = 0; j < arr.size; ++j) {
+            if (!min.valid || arr.data[j] < min.value) {
+                min.valid = true;
+                min.value = arr.data[j];
             }
         }
     }
-    return result;
+
+    // Второй проход — печатаем строки, где есть минимум
+    if (min.valid) {
+        for (size_t i = 0; i < a.size; ++i) {
+            struct array_int arr = a.data[i];
+            for (size_t j = 0; j < arr.size; ++j) {
+                if (arr.data[j] == min.value) {
+                    printf("%zu\n", i);
+                    break; // Переходим к следующей строке
+                }
+            }ы
+        }
+    }
+
+    return min;
 }
 
 /* Вычесть из всех элементов массива массивов число m */
@@ -237,16 +257,20 @@ void array_array_int_free( struct array_array_int array ) {
 
 /* Функция проверки правильности работы всего написанного */
 void perform() {
+
     struct array_array_int array = array_array_int_read();
-    struct maybe_int64 m = array_array_int_min( array );
+
+    struct maybe_int64 m = array_array_int_min(array);
     if (m.valid) {
-      array_array_int_normalize( array, m.value );
-      array_array_int_print( array );
-    }
-    array_array_int_free( array );
-  }
+        array_array_int_normalize(array, m.value);
+        array_array_int_print(array);
+    } 
 
-int main(){
+    array_array_int_free(array);
 
+}
+
+int main() {
+    perform();
     return 0;
 }
