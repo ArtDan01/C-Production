@@ -52,3 +52,31 @@ int main(){
 
     return 0;
 }
+
+
+/*
+Лаконичное решение со степика
+
+
+#include <iostream>
+using namespace std;
+
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+    if (a == 1)
+        cout << (b + c / 3 * 20 + 49) / 50 * 100;
+    else if (a == 2)
+        if (b / 100 * 50 < c)
+            cout << "ERROR";
+        else
+            cout << (b / 100 * 50 - c) / 20 * 3 + 2;
+    else if (a == 3)
+        cout << max(0, b / 100 * 50 - c / 3 * 20);
+    else
+        cout << "ERROR";
+    return 0;
+}
+
+
+*/
