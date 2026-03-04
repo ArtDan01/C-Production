@@ -1,6 +1,13 @@
 {
     "files.associations": {
+<<<<<<< HEAD
         "string": "cpp",
         "iosfwd": "cpp"
     }
+=======
+        "stdint.h": "c",
+        "stab.h": "c"
+    },
+    "cmake.options.statusBarVisibility": "compact"
+>>>>>>> 722434b (Data Types & I/O learned)
 }
