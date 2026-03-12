@@ -16,6 +16,7 @@ int main() {
 		sred = (double)sum / k;
 		cout << fixed << setprecision(1) << sred;
 	} else
+    
 		cout << "No data";
 	return 0;
 }
