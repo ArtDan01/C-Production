@@ -15,11 +15,11 @@ int main() {
         while(true){
             max_sum += local_max % 10;
             local_max /= 10;
-            if(local_max / 10 == 0){
-                max_sum += local_max;
-                local_max = tmp;
-                break;
-            }
+                if(local_max / 10 == 0){
+                    max_sum += local_max;
+                    local_max = tmp;
+                    break;
+                }
         }
     }
     int number;
