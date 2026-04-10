@@ -1,5 +1,8 @@
 #include <iostream>
 using namespace std;
+/*
+! Решить!!!
+*/
 int main() {
     // put your code here
     int input;
@@ -22,6 +25,11 @@ int main() {
             }
         }
     }
-    cout << sum << endl;
+    if(sum > max_sum){
+        max_sum = sum;
+        local_max = loc_tmp;
+    }
+    }
+    cout << local_max << ' ' << max_sum << endl; 
     return 0;
 }

@@ -2,9 +2,18 @@
 using namespace std;
 int main() {
     // put your code here
+<<<<<<< HEAD
     // int step = 20; int columns = 6;
+=======
+    /*
+    ! Внутренний цикл выполняется полностью на одну итерацию внешнего
+    ! значит внешний должен итерироваться по строкам, а внутренний по элементам от 1 до степа
+    */
+>>>>>>> fa7b24dfeb54f5999c02b4a3c63b8a52e7c4766e
     int step, columns;
+    int start = 100;
     cin >> step >> columns;
+<<<<<<< HEAD
     for(int j = 100; j <= 999; j){
         for(int i = 1; i <= columns; i++){
             if(j >= 999) break;
@@ -12,6 +21,11 @@ int main() {
             else{ cout << j << ' ';}
             
             j+=step;
+=======
+    for(int i = 1; i <= columns; i++){
+        for(int j = start; j <=start +step*columns; j+=step){
+            cout << j << ' ';
+>>>>>>> fa7b24dfeb54f5999c02b4a3c63b8a52e7c4766e
         }
         cout << endl;
     }
