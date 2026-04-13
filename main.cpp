@@ -2,7 +2,7 @@
 #include <iostream>
 #include <main.hpp>
 
-string hello = "Hello";
+std::string hello = "Hello";
 
 int main(){
    std:: cout << hello << std:: endl;
